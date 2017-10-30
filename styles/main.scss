@@ -1,0 +1,26 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #4DB6AC;
+}
+
+.columns {
+  display: flex;
+}
+
+.curve {
+  width: calc(100vw - 300px);
+  height: 100vh;
+  margin: 0 auto;
+  display: block;
+  background: #4DB6AC;
+}
+
+.menu {
+  width: 300px;
+  height: 100vh;
+  background: rgba(#26A69A, 0.5);
+}
