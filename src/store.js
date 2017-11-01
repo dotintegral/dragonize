@@ -16,8 +16,20 @@ const initialState = {
 
 function reducer(state = initialState, action) {
   switch (action.type) {
-    case 'ADD_TODO':
-      return state.concat([action.text])
+    case 'DRAW': {
+      const newState = Object.assign({}, state)
+      newState.curve = Object.assign(
+        {},
+        state.curve,
+        {
+          ratio1: action.ratio1,
+          ratio2: action.ratio2
+        }
+      )
+
+      return newState
+    }
+    
     default:
       return state
   }

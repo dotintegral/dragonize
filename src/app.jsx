@@ -38,7 +38,7 @@ const theme = Object.assign(
 export default class App extends React.Component {
   render() {
     return (
-      <MuiThemeProvider muiTheme={getMuiTheme(theme)}>
+      <MuiThemeProvider>
         <Provider store={store}>
           <div className="columns">
             <Curve />
