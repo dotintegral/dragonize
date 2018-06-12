@@ -26,3 +26,16 @@ body {
   background: rgba(#fff, 0.9);
   padding: 20px;
 }
+
+.ratioLine {
+  display: flex;
+}
+
+.ratioInput {
+  flex: 1;
+  margin: 0 12px;
+}
+
+.ratioIncrement {
+  min-width: 40px !important;
+}

@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
+import FlatButton from 'material-ui/FlatButton'
 
 class Menu extends React.Component {
   constructor(props) {
@@ -9,8 +10,9 @@ class Menu extends React.Component {
     const {curveProps} = props
 
     this.state = {
-      ratio1: curveProps.ratio1,
-      ratio2: curveProps.ratio2
+      ratio1: curveProps.ratio1.toFixed(4),
+      ratio2: curveProps.ratio2.toFixed(4),
+      step: curveProps.step
     }
 
     this.onSubmit = this.onSubmit.bind(this)
@@ -19,30 +21,102 @@ class Menu extends React.Component {
   onSubmit() {
     this.props.triggerDraw({
       ratio1: this.state.ratio1,
-      ratio2: this.state.ratio2
+      ratio2: this.state.ratio2,
+      step: this.state.step
     })
   }
 
   render() {
     const {curveProps} = this.props
-    const buttonStyle = {
+    const incrementButtonStyle = {
+      margin: '25px 0 20px',
+      display: 'block'
+    }
+    const submitButtonStyle = {
       margin: '20px auto',
       display: 'block'
     }
 
     return (
       <div className="menu">
-        <TextField
-          floatingLabelText="Ratio 1"
-          defaultValue={this.state.ratio1}
-          onChange={(event, val) => this.setState({ratio1: val})}/>
-        <TextField
-          floatingLabelText="Ratio 2"
-          defaultValue={this.state.ratio2}
-          onChange={(event, val) => this.setState({ratio2: val})}/>
+        <div className="ratioLine">
+          <RaisedButton
+            label="-"
+            className="ratioIncrement"
+            style={incrementButtonStyle}
+            onClick={() => {
+              this.setState({
+                ratio1: (+this.state.ratio1 - 0.01).toFixed(4)
+              }, this.onSubmit)
+            }} />
+          <TextField
+            floatingLabelText="Ratio 1"
+            className="ratioInput"
+            value={this.state.ratio1}
+            onChange={(event, val) => this.setState({ratio1: val})}/>
+          <RaisedButton
+            label="+"
+            className="ratioIncrement"
+            style={incrementButtonStyle}
+            onClick={() => {
+              this.setState({
+                ratio1: (+this.state.ratio1 + 0.01).toFixed(4)
+              }, this.onSubmit)
+            }} />
+        </div>
+        <div className="ratioLine">
+          <RaisedButton
+            label="-"
+            className="ratioIncrement"
+            style={incrementButtonStyle}
+            onClick={() => {
+              this.setState({
+                ratio2: (+this.state.ratio2 - 0.01).toFixed(4)
+              }, this.onSubmit)
+            }} />
+          <TextField
+            floatingLabelText="Ratio 2"
+            className="ratioInput"
+            value={this.state.ratio2}
+            onChange={(event, val) => this.setState({ratio2: val})}/>
+          <RaisedButton
+            label="+"
+            className="ratioIncrement"
+            style={incrementButtonStyle}
+            onClick={() => {
+              this.setState({
+                ratio2: (+this.state.ratio2 + 0.01).toFixed(4)
+              }, this.onSubmit)
+            }} />
+        </div>
+        <div className="ratioLine">
+          <RaisedButton
+            label="-"
+            className="ratioIncrement"
+            style={incrementButtonStyle}
+            onClick={() => {
+              this.setState({
+                step: (+this.state.step - 1)
+              }, this.onSubmit)
+            }} />
+          <TextField
+            floatingLabelText="Step"
+            className="ratioInput"
+            value={this.state.step}
+            onChange={(event, val) => this.setState({step: val})}/>
+          <RaisedButton
+            label="+"
+            className="ratioIncrement"
+            style={incrementButtonStyle}
+            onClick={() => {
+              this.setState({
+                step: (+this.state.step + 1)
+              }, this.onSubmit)
+            }} />
+        </div>
         <RaisedButton
           label="DRAW!"
-          style={buttonStyle}
+          style={submitButtonStyle}
           onClick={this.onSubmit} />
       </div>
     )
@@ -55,10 +129,11 @@ const mapStateToProps = ({curve}) => ({
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    triggerDraw: ({ratio1, ratio2}) => dispatch({
+    triggerDraw: ({ratio1, ratio2, step}) => dispatch({
       type: 'DRAW',
       ratio1,
-      ratio2
+      ratio2,
+      step
     })
   }
 }

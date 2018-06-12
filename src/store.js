@@ -23,13 +23,14 @@ function reducer(state = initialState, action) {
         state.curve,
         {
           ratio1: action.ratio1,
-          ratio2: action.ratio2
+          ratio2: action.ratio2,
+          step: action.step
         }
       )
 
       return newState
     }
-    
+
     default:
       return state
   }
