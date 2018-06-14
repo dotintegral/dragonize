@@ -1,8 +1,8 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
-import FlatButton from 'material-ui/FlatButton'
 
 class Menu extends React.Component {
   constructor(props) {
@@ -27,7 +27,6 @@ class Menu extends React.Component {
   }
 
   render() {
-    const {curveProps} = this.props
     const incrementButtonStyle = {
       margin: '25px 0 20px',
       display: 'block'
@@ -96,7 +95,7 @@ class Menu extends React.Component {
             style={incrementButtonStyle}
             onClick={() => {
               this.setState({
-                step: (+this.state.step - 1)
+                step: Math.max(Math.min((+this.state.step - 1), 20), 0)
               }, this.onSubmit)
             }} />
           <TextField
@@ -110,7 +109,7 @@ class Menu extends React.Component {
             style={incrementButtonStyle}
             onClick={() => {
               this.setState({
-                step: (+this.state.step + 1)
+                step: Math.max(Math.min((+this.state.step + 1), 20), 0)
               }, this.onSubmit)
             }} />
         </div>
@@ -121,6 +120,11 @@ class Menu extends React.Component {
       </div>
     )
   }
+}
+
+Menu.propTypes = {
+  curveProps: PropTypes.object,
+  triggerDraw: PropTypes.func,
 }
 
 const mapStateToProps = ({curve}) => ({

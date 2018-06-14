@@ -9,7 +9,7 @@ const initialState = {
   curve: {
     ratio1: 0.74274294,
     ratio2: 0.55166708,
-    step: 17,
+    step: 20,
     initialTriangle: true
   }
 }

@@ -1,102 +1,145 @@
-import React from 'react'
-import { connect } from 'react-redux'
+import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
-import logic from './logic.js'
+import logic from "./logic.js";
+import Knob from "../Knob";
 
 class Curve extends React.Component {
-  constructor(props) {
-    super(props)
+	constructor(props) {
+		super(props);
 
-    this.state = {
-      width: 1000,
-      height: 1000
-    }
+		this.state = {
+			width: 1000,
+			height: 1000,
+			knobX: 1,
+			knobY: 1
+		};
 
-    this.draw = this.draw.bind(this)
-    this.drawPath = this.drawPath.bind(this)
-    this.resize = this.resize.bind(this)
-  }
+		this.draw = this.draw.bind(this);
+		this.drawPath = this.drawPath.bind(this);
+		this.resize = this.resize.bind(this);
+	}
 
-  draw() {
-    const {curveProps, canvasProps} = this.props
-    const paths = logic.getPaths(
-      Object.assign({}, curveProps, {steps: 17})
-    )
+	draw() {
+		const { curveProps } = this.props;
+		const paths = logic.getPaths({
+			ratio1: curveProps.ratio1,
+			ratio2: curveProps.ratio2,
+			steps: 20
+		});
 
-    const path = paths[this.props.curveProps.step]
+		const path = paths[this.props.curveProps.step];
 
-    const canvas = document.querySelector('#curve')
-    const context = canvas.getContext('2d')
+		const canvas = document.querySelector("#curve");
+		const context = canvas.getContext("2d");
 
-    context.clearRect(0, 0, canvas.width, canvas.height)
+		context.clearRect(0, 0, canvas.width, canvas.height);
 
-    if (curveProps.initialTriangle) {
-      this.drawPath(context, paths[0], '#e0e0e0')
-      this.drawPath(context, paths[1], '#e0e0e0')
-    }
+		if (curveProps.initialTriangle) {
+			this.drawPath(context, paths[0], "#e0e0e0");
+			this.drawPath(context, paths[1], "#e0e0e0");
+		}
 
-    this.drawPath(context, path, '#fff')
-  }
+		this.drawPath(context, path, "#fff");
+	}
 
-  drawPath(context, path, color) {
-    const {width, height} = this.state
-    const min = Math.min(width, height) * this.props.canvasProps.zoom
-    const scale = min / 2
-    const marginTop = min / 4 + (height - min) / 2
-    const marginLeft = min / 4 + (width - min) / 2
+	getScaleParams() {
+		const { width, height } = this.state;
+		const min = Math.min(width, height) * this.props.canvasProps.zoom;
+		const scale = min / 2;
+		const marginTop = min / 4 + (height - min) / 2;
+		const marginLeft = min / 4 + (width - min) / 2;
 
-    const start = path[0]
-    context.beginPath()
-    context.moveTo(start.x * scale + marginLeft, start.y * scale + marginTop)
+		return {
+			scale,
+			marginTop,
+			marginLeft
+		};
+	}
 
-    path.forEach((point) => {
-      context.lineTo(point.x * scale + marginLeft, point.y * scale + marginTop)
-    })
+	drawPath(context, path, color) {
+		const { scale, marginTop, marginLeft } = this.getScaleParams();
 
-    context.strokeStyle = color
-    context.stroke()
-  }
+		const start = path[0];
+		context.beginPath();
+		context.moveTo(start.x * scale + marginLeft, start.y * scale + marginTop);
 
-  resize() {
-    const canvas = document.querySelector('#curve')
-    const {width, height} = canvas.getBoundingClientRect()
+		path.forEach(point => {
+			context.lineTo(point.x * scale + marginLeft, point.y * scale + marginTop);
+		});
 
-    if (width !== this.state.width || height !== this.state.height) {
-      canvas.width = width
-      canvas.height = height
+		context.strokeStyle = color;
+		context.stroke();
+	}
 
-      this.setState({
-        width,
-        height
-      })
-    }
-  }
+	resize() {
+		const canvas = document.querySelector("#curve");
+		const { width, height } = canvas.getBoundingClientRect();
 
-  componentDidMount() {
-    window.addEventListener('resize', this.resize);
-    this.resize()
-    this.draw()
-  }
+		if (width !== this.state.width || height !== this.state.height) {
+			canvas.width = width;
+			canvas.height = height;
 
-  componentWillUnmount() {
-    window.removeEventListener(this.resize);
-  }
+			this.setState({
+				width,
+				height
+			});
+		}
+	}
 
-  componentDidUpdate() {
-    this.resize()
-    this.draw()
-  }
+	componentDidMount() {
+		window.addEventListener("resize", this.resize);
+		this.resize();
+		this.draw();
+	}
 
-  render() {
-    return (
-      <canvas id='curve' className='curve' width='1000' height='1000' />
-    )
-  }
+	componentWillUnmount() {
+		window.removeEventListener(this.resize);
+	}
+
+	componentDidUpdate() {
+		this.resize();
+		this.draw();
+	}
+
+	render() {
+		const { scale, marginTop, marginLeft } = this.getScaleParams();
+
+		const knobProps = {
+			top: this.state.knobY * scale + marginTop,
+			left: this.state.knobX * scale + marginLeft
+		};
+
+		return (
+			<div className="curveWrapper">
+				<Knob
+					{...knobProps}
+					onDrag={() => console.log("drag")}
+					onDrop={({ top, left }) => {
+						const knobY = (top - marginTop) / scale;
+						const knobX = (left - marginLeft) / scale;
+
+						this.setState({
+							knobX: knobX,
+							knobY: knobY
+						});
+					}}
+				/>
+				<canvas id="curve" className="curve" width="1000" height="1000" />
+			</div>
+		);
+	}
 }
 
-const mapStateToProps = ({curve, canvas}) => ({
-  curveProps: curve,
-  canvasProps: canvas
-})
+Curve.propTypes = {
+	curveProps: PropTypes.object,
+	canvasProps: PropTypes.object
+};
 
-export default connect(mapStateToProps)(Curve)
+const mapStateToProps = ({ curve, canvas }) => ({
+	curveProps: curve,
+	canvasProps: canvas
+});
+
+export default connect(mapStateToProps)(Curve);
