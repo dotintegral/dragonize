@@ -1,3 +1,5 @@
+import { memoizeWith } from "ramda";
+
 const threshold = 0.001;
 const left = "left";
 const right = "right";
@@ -83,6 +85,9 @@ const getPaths = ({ ratio1, ratio2, steps }) => {
   return paths;
 };
 
+const argsToString = ({ ratio1, ratio2, steps }) =>
+  `${ratio1}-${ratio2}-${steps}`;
+
 export default {
-  getPaths: getPaths
+  getPaths: memoizeWith(argsToString, getPaths)
 };
