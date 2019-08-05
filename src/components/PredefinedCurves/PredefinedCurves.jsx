@@ -44,7 +44,9 @@ const PredefinedCurves = () => {
         <InputLabel>Predefined Curves</InputLabel>
         <Select value={value} onChange={onChange({ curves, dispatch })}>
           {curves.map(c => (
-            <MenuItem value={c.name}>{c.name}</MenuItem>
+            <MenuItem value={c.name} key={c.name}>
+              {c.name}
+            </MenuItem>
           ))}
           <MenuItem value="Custom">Custom</MenuItem>
         </Select>

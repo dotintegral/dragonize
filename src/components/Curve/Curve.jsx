@@ -2,6 +2,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
+import Knob from "../Knob/Knob";
+
 import logic from "./logic.js";
 import { CurveWrapper } from "./Curve.styled";
 
@@ -77,7 +79,6 @@ class Curve extends React.Component {
     const canvas = document.querySelector("#curve");
     const parent = canvas.parentElement;
     const { width, height } = parent.getBoundingClientRect();
-    console.log({ width, height });
 
     if (width !== this.state.width || height !== this.state.height) {
       canvas.width = width;
@@ -115,6 +116,7 @@ class Curve extends React.Component {
 
     return (
       <CurveWrapper>
+        <Knob />
         <canvas id="curve" className="curve" width={1000} height={1000} />
       </CurveWrapper>
     );
