@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
 import logic from "./logic.js";
+import { CurveWrapper } from "./Curve.styled";
 
 class Curve extends React.Component {
   constructor(props) {
@@ -74,7 +75,9 @@ class Curve extends React.Component {
 
   resize() {
     const canvas = document.querySelector("#curve");
-    const { width, height } = canvas.getBoundingClientRect();
+    const parent = canvas.parentElement;
+    const { width, height } = parent.getBoundingClientRect();
+    console.log({ width, height });
 
     if (width !== this.state.width || height !== this.state.height) {
       canvas.width = width;
@@ -111,9 +114,9 @@ class Curve extends React.Component {
     };
 
     return (
-      <div className="curveWrapper">
-        <canvas id="curve" className="curve" width="1000" height="1000" />
-      </div>
+      <CurveWrapper>
+        <canvas id="curve" className="curve" width={1000} height={1000} />
+      </CurveWrapper>
     );
   }
 }

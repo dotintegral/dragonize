@@ -36,8 +36,6 @@ const PredefinedCurves = () => {
     c => c.ratio1 === ratio1 && c.ratio2 === ratio2
   );
 
-  console.log(curves, ratio1, ratio2);
-
   const value = existingCurve ? existingCurve.name : "Custom";
 
   return (
