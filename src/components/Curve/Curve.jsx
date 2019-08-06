@@ -116,7 +116,10 @@ class Curve extends React.Component {
 
     return (
       <CurveWrapper>
-        <Knob />
+        <Knob
+          onChange={a => console.log(a)}
+          heightLimit={Math.floor(this.state.height / 2)}
+        />
         <canvas id="curve" className="curve" width={1000} height={1000} />
       </CurveWrapper>
     );

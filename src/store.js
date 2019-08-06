@@ -17,13 +17,17 @@ const initialState = {
   canvas: {
     width: 1600,
     height: 900,
-    zoom: 1
+    zoom: 0.1
   },
   curve: {
     ratio1: predefinedCurves[0].ratio1,
     ratio2: predefinedCurves[0].ratio2,
-    step: 20,
+    step: 1,
     initialTriangle: true
+  },
+  knob: {
+    x: 100,
+    y: 100
   },
   predefinedCurves
 };
@@ -37,6 +41,18 @@ function reducer(state = initialState, action) {
         ratio2: action.ratio2 || state.curve.ratio2,
         step: action.step || state.curve.step
       });
+
+      return newState;
+    }
+
+    case "SET_KNOB": {
+      const newState = {
+        ...state,
+        knob: {
+          x: action.x,
+          y: action.y
+        }
+      };
 
       return newState;
     }
