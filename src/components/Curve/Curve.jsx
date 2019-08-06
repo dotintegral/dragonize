@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
 import Knob from "../Knob/Knob";
+import { toCanvasCoords, toCurveCoords } from "../../utils/scale";
 
 import logic from "./logic.js";
 import { CurveWrapper } from "./Curve.styled";
@@ -21,6 +22,7 @@ class Curve extends React.Component {
     this.draw = this.draw.bind(this);
     this.drawPath = this.drawPath.bind(this);
     this.resize = this.resize.bind(this);
+    this.onKnobChange = this.onKnobChange.bind(this);
   }
 
   draw() {
@@ -46,29 +48,15 @@ class Curve extends React.Component {
     this.drawPath(context, path, "#fff");
   }
 
-  getScaleParams() {
-    const { width, height } = this.state;
-    const min = Math.min(width, height) * this.props.canvasProps.zoom;
-    const scale = min / 2;
-    const marginTop = min / 4 + (height - min) / 2;
-    const marginLeft = min / 4 + (width - min) / 2;
-
-    return {
-      scale,
-      marginTop,
-      marginLeft
-    };
-  }
-
   drawPath(context, path, color) {
-    const { scale, marginTop, marginLeft } = this.getScaleParams();
+    const calculateCoords = toCanvasCoords(this.props.canvasProps);
 
     const start = path[0];
     context.beginPath();
-    context.moveTo(start.x * scale + marginLeft, start.y * scale + marginTop);
+    context.moveTo(...calculateCoords(start));
 
     path.forEach(point => {
-      context.lineTo(point.x * scale + marginLeft, point.y * scale + marginTop);
+      context.lineTo(...calculateCoords(point));
     });
 
     context.strokeStyle = color;
@@ -79,12 +67,13 @@ class Curve extends React.Component {
     const canvas = document.querySelector("#curve");
     const parent = canvas.parentElement;
     const { width, height } = parent.getBoundingClientRect();
+    const { canvasProps } = this.props;
 
-    if (width !== this.state.width || height !== this.state.height) {
+    if (width !== canvasProps.width || height !== canvasProps.height) {
       canvas.width = width;
       canvas.height = height;
 
-      this.setState({
+      this.props.resize({
         width,
         height
       });
@@ -106,19 +95,18 @@ class Curve extends React.Component {
     this.draw();
   }
 
+  onKnobChange(position) {
+    const coords = toCurveCoords(this.props.canvasProps)(position);
+
+    console.log(coords);
+  }
+
   render() {
-    const { scale, marginTop, marginLeft } = this.getScaleParams();
-
-    const knobProps = {
-      top: this.state.knobY * scale + marginTop,
-      left: this.state.knobX * scale + marginLeft
-    };
-
     return (
       <CurveWrapper>
         <Knob
-          onChange={a => console.log(a)}
-          heightLimit={Math.floor(this.state.height / 2)}
+          onChange={this.onKnobChange}
+          heightLimit={Math.floor(this.props.canvasProps.height / 2)}
         />
         <canvas id="curve" className="curve" width={1000} height={1000} />
       </CurveWrapper>
@@ -131,9 +119,21 @@ Curve.propTypes = {
   canvasProps: PropTypes.object
 };
 
-const mapStateToProps = ({ curve, canvas }) => ({
+const mapStateToProps = ({ curve, canvas, knob }) => ({
   curveProps: curve,
-  canvasProps: canvas
+  canvasProps: canvas,
+  knobProps: knob
 });
 
-export default connect(mapStateToProps)(Curve);
+const mapDispatchToProps = dispatch => ({
+  resize: size =>
+    dispatch({
+      type: "RESIZE",
+      ...size
+    })
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Curve);

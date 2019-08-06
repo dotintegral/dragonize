@@ -1,5 +1,7 @@
 import { createStore } from "redux";
 
+import { draw, moveKnob, resize } from "./reducers";
+
 const predefinedCurves = [
   {
     name: "Classic",
@@ -15,9 +17,9 @@ const predefinedCurves = [
 
 const initialState = {
   canvas: {
-    width: 1600,
-    height: 900,
-    zoom: 0.1
+    width: 1000,
+    height: 1000,
+    zoom: 1
   },
   curve: {
     ratio1: predefinedCurves[0].ratio1,
@@ -33,28 +35,18 @@ const initialState = {
 };
 
 function reducer(state = initialState, action) {
+  console.log(action);
   switch (action.type) {
     case "DRAW": {
-      const newState = Object.assign({}, state);
-      newState.curve = Object.assign({}, state.curve, {
-        ratio1: action.ratio1 || state.curve.ratio1,
-        ratio2: action.ratio2 || state.curve.ratio2,
-        step: action.step || state.curve.step
-      });
-
-      return newState;
+      return draw({ state, action });
     }
 
-    case "SET_KNOB": {
-      const newState = {
-        ...state,
-        knob: {
-          x: action.x,
-          y: action.y
-        }
-      };
+    case "MOVE_KNOB": {
+      return moveKnob({ state, action });
+    }
 
-      return newState;
+    case "RESIZE": {
+      return resize({ state, action });
     }
 
     default:
